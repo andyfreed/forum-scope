@@ -250,7 +250,10 @@ export class MemStorage implements IStorage {
       originalUrl: post.originalUrl || null,
       author: post.author || null,
       publishedAt: post.publishedAt || null,
-      priority: post.priority || null
+      priority: post.priority || null,
+      engagement: post.engagement || null,
+      tags: post.tags || null,
+      trendingScore: post.trendingScore || null
     };
     this.posts.set(id, newPost);
     return newPost;
