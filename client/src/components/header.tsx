@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Search, Settings, Radar, User, LogOut } from "lucide-react";
 import NotificationBell from "./notification-bell";
 import { useAuth } from "@/hooks/useAuth";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import logoPath from "@assets/forum-scope_1752031606027.png";
 
 interface HeaderProps {
@@ -14,11 +16,22 @@ interface HeaderProps {
 
 export default function Header({ onSearch }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [, setLocation] = useLocation();
   const { user, isAuthenticated } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(searchQuery);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await apiRequest("/api/auth/logout", { method: "POST" });
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setLocation("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -75,11 +88,11 @@ export default function Header({ onSearch }: HeaderProps) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuItem onClick={() => window.location.href = '/profile'}>
+                  <DropdownMenuItem onClick={() => setLocation('/profile')}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = '/api/logout'}>
+                  <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Sign out</span>
                   </DropdownMenuItem>
@@ -89,7 +102,7 @@ export default function Header({ onSearch }: HeaderProps) {
               <Button 
                 variant="default" 
                 size="sm"
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => setLocation('/auth')}
               >
                 Sign In
               </Button>

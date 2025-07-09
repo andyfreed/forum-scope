@@ -7,6 +7,7 @@ import Home from "@/pages/home";
 import Profile from "@/pages/profile";
 import Landing from "@/pages/landing";
 import NotFound from "@/pages/not-found";
+import Auth from "@/pages/auth";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/category/:slug" component={Home} />
       <Route path="/profile" component={Profile} />
+      <Route path="/auth" component={Auth} />
       <Route component={NotFound} />
     </Switch>
   );

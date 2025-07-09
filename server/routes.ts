@@ -5,34 +5,86 @@ import { filterSchema, createCategoryFormSchema, type FilterOptions, type Create
 import { analyzeForumContent, summarizeTopics } from "./services/openai";
 import { forumScraper } from "./services/scraper";
 import { socialMediaIntegrator } from "./services/social-media";
+import { signup, login, authenticateToken, optionalAuth, type AuthRequest } from "./auth";
 
 
 export async function registerRoutes(app: Express): Promise<Server | void> {
-  // Demo auth endpoint
-  app.get('/api/auth/user', async (req, res) => {
-    const mockUser = {
-      id: '1',
-      email: 'demo@forumscope.com',
-      firstName: 'Demo',
-      lastName: 'User',
-      profileImageUrl: null,
-      createdAt: new Date('2024-01-01').toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    res.json(mockUser);
+  // Auth endpoints
+  app.post('/api/auth/signup', async (req, res) => {
+    try {
+      const { email, password, firstName, lastName } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+      
+      const { user, token } = await signup(email, password, firstName, lastName);
+      
+      // Set token as httpOnly cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+      
+      res.json({ user, token });
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
   });
 
-  // Demo login endpoint - just redirects back to home
-  app.get('/api/login', async (req, res) => {
-    // In a real app, this would handle authentication
-    // For demo, we just redirect back to the app
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+      
+      const { user, token } = await login(email, password);
+      
+      // Set token as httpOnly cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+      
+      res.json({ user, token });
+    } catch (error: any) {
+      res.status(401).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/auth/logout', authenticateToken, async (req, res) => {
+    res.clearCookie('token');
+    res.json({ success: true });
+  });
+
+  app.get('/api/auth/user', optionalAuth, async (req: AuthRequest, res) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    const user = await storage.getUser(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Don't send password hash to client
+    const { passwordHash, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  });
+
+  // Legacy redirect endpoints for compatibility
+  app.get('/api/login', (req, res) => {
     res.redirect('/');
   });
-
-  // Demo logout endpoint
-  app.get('/api/logout', async (req, res) => {
-    // In a real app, this would clear the session
-    // For demo, we just redirect back to the app
+  
+  app.get('/api/logout', (req, res) => {
+    res.clearCookie('token');
     res.redirect('/');
   });
 
@@ -263,11 +315,11 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
 
 
   // Vote on a post
-  app.post('/api/posts/:id/vote', async (req, res) => {
+  app.post('/api/posts/:id/vote', authenticateToken, async (req: AuthRequest, res) => {
     try {
       const postId = parseInt(req.params.id);
       const { voteType } = req.body;
-      const userId = '1'; // Mock user ID
+      const userId = req.user!.id;
 
       if (!voteType || !['upvote', 'downvote'].includes(voteType)) {
         return res.status(400).json({ message: 'Invalid vote type' });
@@ -289,10 +341,13 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
   });
 
   // Get user's vote for a post
-  app.get('/api/posts/:id/vote', async (req, res) => {
+  app.get('/api/posts/:id/vote', optionalAuth, async (req: AuthRequest, res) => {
     try {
       const postId = parseInt(req.params.id);
-      const userId = '1'; // Mock user ID
+      if (!req.user) {
+        return res.json({ vote: null });
+      }
+      const userId = req.user.id;
 
       const vote = await storage.getUserVote(userId, postId);
       res.json({ vote: vote?.voteType || null });
@@ -303,11 +358,11 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
   });
 
   // Curate a post
-  app.post('/api/posts/:id/curate', async (req, res) => {
+  app.post('/api/posts/:id/curate', authenticateToken, async (req: AuthRequest, res) => {
     try {
       const postId = parseInt(req.params.id);
       const { curationType, reason } = req.body;
-      const userId = '1'; // Mock user ID
+      const userId = req.user!.id;
 
       if (!curationType || !['bookmark', 'feature', 'hide', 'report'].includes(curationType)) {
         return res.status(400).json({ message: 'Invalid curation type' });
@@ -322,9 +377,9 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
   });
 
   // Get user's curations
-  app.get('/api/curations', async (req, res) => {
+  app.get('/api/curations', authenticateToken, async (req: AuthRequest, res) => {
     try {
-      const userId = '1'; // Mock user ID
+      const userId = req.user!.id;
       const curations = await storage.getUserCurations(userId);
       res.json(curations);
     } catch (error) {

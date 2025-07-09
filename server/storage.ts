@@ -35,8 +35,9 @@ export interface IStorage {
   getUserCurations(userId: string): Promise<UserCuration[]>;
 
   // User operations
-  // (IMPORTANT) these user operations are mandatory for Replit Auth.
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: UpsertUser): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
 }
 
@@ -550,9 +551,27 @@ export class MemStorage implements IStorage {
   }
 
   // User operations
-  // (IMPORTANT) these user operations are mandatory for Replit Auth.
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(u => u.email === email);
+  }
+
+  async createUser(userData: UpsertUser): Promise<User> {
+    const user: User = {
+      ...userData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+      passwordHash: userData.passwordHash || null,
+    };
+    this.users.set(userData.id, user);
+    return user;
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
@@ -565,6 +584,7 @@ export class MemStorage implements IStorage {
       firstName: userData.firstName || null,
       lastName: userData.lastName || null,
       profileImageUrl: userData.profileImageUrl || null,
+      passwordHash: userData.passwordHash !== undefined ? userData.passwordHash : existingUser?.passwordHash || null,
     };
     this.users.set(userData.id, user);
     return user;
