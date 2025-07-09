@@ -4,35 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Mail, Calendar, Settings, LogOut } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-
 export default function Profile() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-neutral-600">Loading profile...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <Card className="p-8 text-center max-w-md">
-          <h2 className="text-xl font-semibold mb-4">Account Required</h2>
-          <p className="text-neutral-600 mb-6">Please sign in to view your profile.</p>
-          <Button onClick={() => window.location.href = '/api/login'}>
-            Sign In
-          </Button>
-        </Card>
-      </div>
-    );
-  }
+  // Demo user data
+  const user = {
+    id: '1',
+    email: 'demo@forumscope.com',
+    firstName: 'Demo',
+    lastName: 'User',
+    profileImageUrl: null,
+    createdAt: new Date('2024-01-01').toISOString(),
+    updatedAt: new Date().toISOString()
+  };
 
   const initials = user.firstName && user.lastName 
     ? `${user.firstName[0]}${user.lastName[0]}` 
@@ -55,11 +37,11 @@ export default function Profile() {
           </div>
           <Button 
             variant="outline" 
-            onClick={() => window.location.href = '/api/logout'}
+            onClick={() => alert('In production, this would sign you out')}
             className="flex items-center space-x-2"
           >
             <LogOut className="h-4 w-4" />
-            <span>Sign Out</span>
+            <span>Demo Mode</span>
           </Button>
         </div>
 

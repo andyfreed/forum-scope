@@ -32,6 +32,10 @@ Preferred communication style: Simple, everyday language.
 - **Sources**: Forum sources (Reddit, MavicPilots, etc.)
 - **Posts**: Forum posts with AI-generated summaries and metadata
 - **Analytics**: Category-level statistics and metrics
+- **User Votes**: Community voting on posts (upvote/downvote)
+- **User Curations**: Bookmarks, featured posts, hidden content
+- **Users**: User profiles and authentication data
+- **Sessions**: User session management
 
 #### AI Content Analysis
 - **Content Summarization**: GPT-4o generates concise summaries
@@ -41,10 +45,11 @@ Preferred communication style: Simple, everyday language.
 - **Trending Score**: Algorithmic scoring for content popularity
 
 #### Data Storage Solutions
-- **Primary Database**: PostgreSQL via Neon serverless
+- **Primary Database**: PostgreSQL (Supabase or any PostgreSQL provider)
 - **ORM**: Drizzle with type-safe schema definitions
 - **Migrations**: Drizzle Kit for schema management
 - **Development Storage**: In-memory storage class for development/testing
+- **Production Ready**: Supports Supabase, Railway, Render, or any PostgreSQL host
 
 ## Data Flow
 
@@ -131,3 +136,6 @@ Currently implements session-based authentication using:
 - ✓ **User-Generated Curation**: Bookmark, feature, hide, and report posts with community moderation
 - ✓ **Community Score Sorting**: New sorting option based on community voting patterns
 - ✓ **Advanced Post Management**: Featured posts display with crown badges and curation menu
+- ✓ **Production Ready**: Switched to Supabase database for easy deployment anywhere
+- ✓ **Deployment Guides**: Created comprehensive setup and deployment documentation
+- ✓ **Export Ready**: Removed platform-specific dependencies for easy project export

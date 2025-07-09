@@ -10,19 +10,11 @@ import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
-
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/category/:slug" component={Home} />
-          <Route path="/profile" component={Profile} />
-        </>
-      )}
+      <Route path="/" component={Home} />
+      <Route path="/category/:slug" component={Home} />
+      <Route path="/profile" component={Profile} />
       <Route component={NotFound} />
     </Switch>
   );

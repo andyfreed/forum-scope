@@ -5,22 +5,21 @@ import { filterSchema, createCategoryFormSchema, type FilterOptions, type Create
 import { analyzeForumContent, summarizeTopics } from "./services/openai";
 import { forumScraper } from "./services/scraper";
 import { socialMediaIntegrator } from "./services/social-media";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
-
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
+  // Demo auth endpoint
+  app.get('/api/auth/user', async (req, res) => {
+    const mockUser = {
+      id: '1',
+      email: 'demo@forumscope.com',
+      firstName: 'Demo',
+      lastName: 'User',
+      profileImageUrl: null,
+      createdAt: new Date('2024-01-01').toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    res.json(mockUser);
   });
 
   // Get all categories
@@ -250,11 +249,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Vote on a post
-  app.post('/api/posts/:id/vote', isAuthenticated, async (req: any, res) => {
+  app.post('/api/posts/:id/vote', async (req, res) => {
     try {
       const postId = parseInt(req.params.id);
       const { voteType } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = '1'; // Mock user ID
 
       if (!voteType || !['upvote', 'downvote'].includes(voteType)) {
         return res.status(400).json({ message: 'Invalid vote type' });
@@ -276,10 +275,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user's vote for a post
-  app.get('/api/posts/:id/vote', isAuthenticated, async (req: any, res) => {
+  app.get('/api/posts/:id/vote', async (req, res) => {
     try {
       const postId = parseInt(req.params.id);
-      const userId = req.user.claims.sub;
+      const userId = '1'; // Mock user ID
 
       const vote = await storage.getUserVote(userId, postId);
       res.json({ vote: vote?.voteType || null });
@@ -290,11 +289,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Curate a post
-  app.post('/api/posts/:id/curate', isAuthenticated, async (req: any, res) => {
+  app.post('/api/posts/:id/curate', async (req, res) => {
     try {
       const postId = parseInt(req.params.id);
       const { curationType, reason } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = '1'; // Mock user ID
 
       if (!curationType || !['bookmark', 'feature', 'hide', 'report'].includes(curationType)) {
         return res.status(400).json({ message: 'Invalid curation type' });
@@ -309,9 +308,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user's curations
-  app.get('/api/curations', isAuthenticated, async (req: any, res) => {
+  app.get('/api/curations', async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = '1'; // Mock user ID
       const curations = await storage.getUserCurations(userId);
       res.json(curations);
     } catch (error) {

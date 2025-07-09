@@ -15,8 +15,8 @@ export default function Landing() {
             </div>
             <h1 className="text-xl font-bold text-gray-900">ForumScope</h1>
           </div>
-          <Button onClick={() => window.location.href = '/api/login'}>
-            Sign In with Replit
+          <Button onClick={() => window.location.href = '/'}>
+            View Demo
           </Button>
         </div>
       </header>
@@ -42,13 +42,17 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/'}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              Get Started Free
+              Try Demo
             </Button>
-            <Button size="lg" variant="outline">
-              View Demo
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => window.open('https://github.com/your-username/forumscope', '_blank')}
+            >
+              Get Source Code
             </Button>
           </div>
         </div>
@@ -137,9 +141,9 @@ export default function Landing() {
           <Button 
             size="lg" 
             variant="secondary"
-            onClick={() => window.location.href = '/api/login'}
+            onClick={() => window.location.href = '/'}
           >
-            Start Using ForumScope
+            Try Demo Now
           </Button>
         </div>
       </section>
