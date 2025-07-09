@@ -7,6 +7,11 @@ let _db: ReturnType<typeof drizzle>;
 function getDb() {
   if (!_db) {
     if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL not configured!');
+      console.error('   Please set DATABASE_URL in Vercel environment variables');
+      console.error('   Get a free PostgreSQL database from:');
+      console.error('   - Neon: https://neon.tech');
+      console.error('   - Supabase: https://supabase.com');
       throw new Error('DATABASE_URL environment variable is required');
     }
     const sql = neon(process.env.DATABASE_URL);
