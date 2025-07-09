@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Bell, Settings, Radar } from "lucide-react";
+import { Search, Settings, Radar } from "lucide-react";
+import NotificationBell from "./notification-bell";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -45,9 +46,7 @@ export default function Header({ onSearch }: HeaderProps) {
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="text-neutral-600 hover:text-primary">
-              <Bell className="h-5 w-5" />
-            </Button>
+            <NotificationBell />
             <Button variant="ghost" size="sm" className="text-neutral-600 hover:text-primary">
               <Settings className="h-5 w-5" />
             </Button>

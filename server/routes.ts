@@ -71,6 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filters = filterSchema.parse({
         categories: req.query.categories ? String(req.query.categories).split(',') : undefined,
         sources: req.query.sources ? String(req.query.sources).split(',') : undefined,
+        priorities: req.query.priorities ? String(req.query.priorities).split(',') : undefined,
         timeRange: req.query.timeRange as any,
         sortBy: req.query.sortBy as any,
         search: req.query.search as string

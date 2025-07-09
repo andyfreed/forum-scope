@@ -69,6 +69,7 @@ export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
 export const filterSchema = z.object({
   categories: z.array(z.string()).optional(),
   sources: z.array(z.string()).optional(),
+  priorities: z.array(z.string()).optional(),
   timeRange: z.enum(['24h', '7d', '30d', 'all']).optional(),
   sortBy: z.enum(['recent', 'popular', 'discussed']).optional(),
   search: z.string().optional(),

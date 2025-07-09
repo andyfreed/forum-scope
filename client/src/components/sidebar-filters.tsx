@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import CategoryManager from "./category-manager";
+import PriorityFilters from "./priority-filters";
 import type { Category, Source, FilterOptions } from "@shared/schema";
 
 interface SidebarFiltersProps {
@@ -42,6 +43,15 @@ export default function SidebarFilters({ filters, onFiltersChange, categories }:
       : currentSources.filter(s => s !== sourceName);
     
     onFiltersChange({ sources: newSources });
+  };
+
+  const handlePriorityToggle = (priority: string) => {
+    const currentPriorities = filters.priorities || [];
+    const newPriorities = currentPriorities.includes(priority)
+      ? currentPriorities.filter(p => p !== priority)
+      : [...currentPriorities, priority];
+    
+    onFiltersChange({ priorities: newPriorities });
   };
 
   return (
@@ -92,6 +102,12 @@ export default function SidebarFilters({ filters, onFiltersChange, categories }:
             </SelectContent>
           </Select>
         </div>
+
+        {/* Priority Filter */}
+        <PriorityFilters 
+          selectedPriorities={filters.priorities || []}
+          onPriorityToggle={handlePriorityToggle}
+        />
 
         {/* Source Filter */}
         <div>

@@ -97,8 +97,20 @@ Currently implements session-based authentication using:
 ## Key Features
 
 - **Multi-source Aggregation**: Supports Reddit, specialized forums, and community sites
-- **AI-Powered Analysis**: Automatic content summarization and categorization
-- **Real-time Filtering**: Filter by category, source, time range, and priority
-- **Search Functionality**: Full-text search across posts and summaries
+- **AI-Powered Analysis**: Advanced OpenAI GPT-4o content analysis with hobby-specific understanding
+- **Dynamic Category Management**: Add/remove hobby categories through the interface
+- **Real-time Filtering**: Filter by category, source, time range, priority, and search terms
+- **Live Trending Feed**: AI-generated summaries of hot topics with manual refresh capability
+- **Smart Notifications**: Real-time alerts for hot topics, news, and trending discussions
+- **Priority Classification**: Intelligent categorization (hot, trending, news, help, market, normal)
 - **Responsive Design**: Mobile-first design with Tailwind CSS
 - **Performance Optimized**: React Query caching and optimistic updates
+
+## Recent Changes (January 2025)
+
+- ✓ **Dynamic Categories**: Added category management system for creating custom hobby areas
+- ✓ **Priority Filtering**: Users can filter by post priority (hot, trending, news, etc.)
+- ✓ **Live Feed Component**: Real-time trending summaries with refresh capability  
+- ✓ **Enhanced AI Analysis**: Improved OpenAI prompts for better hobby community understanding
+- ✓ **Notification System**: Smart notification bell with priority-based alerts
+- ✓ **Better UI Organization**: Cleaner sidebar with priority filters and category management

@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import SidebarFilters from "@/components/sidebar-filters";
 import StatsBar from "@/components/stats-bar";
 import TopicCard from "@/components/topic-card";
+import LiveFeed from "@/components/live-feed";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -34,6 +35,7 @@ export default function Home() {
       const params = new URLSearchParams();
       if (filters.categories?.length) params.set('categories', filters.categories.join(','));
       if (filters.sources?.length) params.set('sources', filters.sources.join(','));
+      if (filters.priorities?.length) params.set('priorities', filters.priorities.join(','));
       if (filters.timeRange) params.set('timeRange', filters.timeRange);
       if (filters.sortBy) params.set('sortBy', filters.sortBy);
       if (filters.search) params.set('search', filters.search);
@@ -99,6 +101,9 @@ export default function Home() {
 
           {/* Main Content */}
           <div className="flex-1">
+            {/* Live Feed */}
+            <LiveFeed />
+            
             {/* Stats Bar */}
             <StatsBar categorySlug={currentCategory?.slug} />
 

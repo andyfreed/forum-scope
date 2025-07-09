@@ -330,6 +330,10 @@ export class MemStorage implements IStorage {
         posts = posts.filter(p => categoryIds.includes(p.categoryId!));
       }
       
+      if (filters.priorities?.length) {
+        posts = posts.filter(p => filters.priorities!.includes(p.priority || 'normal'));
+      }
+      
       if (filters.timeRange) {
         const timeLimit = this.getTimeLimit(filters.timeRange);
         posts = posts.filter(p => p.publishedAt && p.publishedAt > timeLimit);

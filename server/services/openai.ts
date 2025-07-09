@@ -15,31 +15,37 @@ export interface ContentAnalysis {
 
 export async function analyzeForumContent(title: string, content: string): Promise<ContentAnalysis> {
   try {
-    const prompt = `Analyze this forum post and provide a structured response in JSON format:
+    const prompt = `Analyze this hobby forum post and provide detailed insights in JSON format:
 
 Title: ${title}
 Content: ${content}
 
 Please analyze and return:
-1. summary: A concise 2-3 sentence summary
-2. tags: Array of 3-5 relevant tags/keywords
-3. priority: One of 'hot', 'trending', 'news', 'help', 'market', 'normal' based on content type and urgency
-4. trendingScore: Number 1-100 indicating how trending/popular this topic likely is
-5. sentiment: 'positive', 'neutral', or 'negative' based on overall tone
+1. summary: A concise but informative 2-3 sentence summary that captures the key points
+2. tags: Array of 4-6 specific, relevant tags/keywords (include brands, models, technical terms)
+3. priority: Choose from 'hot', 'trending', 'news', 'help', 'market', 'normal' based on:
+   - 'hot': High engagement, controversy, or urgent issues
+   - 'trending': Popular topics with growing interest
+   - 'news': Official announcements, releases, or breaking developments
+   - 'help': Questions, troubleshooting, or advice requests
+   - 'market': Product releases, pricing, availability, market analysis
+   - 'normal': General discussions, opinions, experiences
+4. trendingScore: Number 1-100 based on:
+   - Technical innovation (20 points)
+   - Community engagement potential (20 points)
+   - Market impact (20 points)
+   - Urgency/timeliness (20 points)
+   - Controversy/discussion value (20 points)
+5. sentiment: 'positive', 'neutral', or 'negative' based on overall tone and satisfaction level
 
-Consider factors like:
-- Urgency of questions (help priority)
-- Market announcements (market priority)
-- Breaking news (news priority)
-- High engagement topics (hot priority)
-- Popular discussions (trending priority)`;
+Focus on hobby-specific terminology and community interests.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "You are an expert at analyzing forum content for hobby communities. Respond with valid JSON only."
+          content: "You are an expert analyst of hobby and enthusiast communities (drones, RC, FPV, etc.). You understand technical terminology, brand dynamics, and community concerns. Provide detailed, accurate analysis in valid JSON format."
         },
         {
           role: "user",
@@ -47,14 +53,15 @@ Consider factors like:
         }
       ],
       response_format: { type: "json_object" },
+      temperature: 0.3, // Lower temperature for more consistent analysis
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
     
     return {
       summary: result.summary || content.substring(0, 200) + "...",
-      tags: result.tags || [],
-      priority: result.priority || 'normal',
+      tags: result.tags || extractBasicTags(title + " " + content),
+      priority: result.priority || determinePriority(title, content),
       trendingScore: Math.max(1, Math.min(100, result.trendingScore || 50)),
       sentiment: result.sentiment || 'neutral'
     };
@@ -64,8 +71,8 @@ Consider factors like:
     // Fallback analysis
     return {
       summary: content.substring(0, 200) + "...",
-      tags: this.extractBasicTags(title + " " + content),
-      priority: this.determinePriority(title, content),
+      tags: extractBasicTags(title + " " + content),
+      priority: determinePriority(title, content),
       trendingScore: 50,
       sentiment: 'neutral'
     };
