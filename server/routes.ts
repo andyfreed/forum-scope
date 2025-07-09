@@ -231,6 +231,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Basic auth route for user info (mock implementation)
+  app.get('/api/auth/user', (req, res) => {
+    // Simple mock user for testing - in production this would check session/token
+    const mockUser = {
+      id: '1',
+      email: 'user@example.com',
+      firstName: 'Forum',
+      lastName: 'User',
+      profileImageUrl: null,
+      createdAt: new Date('2024-01-01').toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    res.json(mockUser);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

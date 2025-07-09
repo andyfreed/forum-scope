@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Settings, Radar } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Search, Settings, Radar, User, LogOut } from "lucide-react";
 import NotificationBell from "./notification-bell";
+import { useAuth } from "@/hooks/useAuth";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -10,6 +13,7 @@ interface HeaderProps {
 
 export default function Header({ onSearch }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const { user, isAuthenticated } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,12 +51,42 @@ export default function Header({ onSearch }: HeaderProps) {
           {/* User Actions */}
           <div className="flex items-center space-x-4">
             <NotificationBell />
-            <Button variant="ghost" size="sm" className="text-neutral-600 hover:text-primary">
-              <Settings className="h-5 w-5" />
-            </Button>
-            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-medium">
-              U
-            </div>
+            
+            {isAuthenticated && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.profileImageUrl || undefined} alt="Profile" />
+                      <AvatarFallback className="bg-primary text-white">
+                        {user.firstName && user.lastName 
+                          ? `${user.firstName[0]}${user.lastName[0]}`
+                          : user.email?.[0]?.toUpperCase() || 'U'
+                        }
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuItem onClick={() => window.location.href = '/profile'}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/api/logout'}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => window.location.href = '/api/login'}
+              >
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </div>
