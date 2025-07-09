@@ -113,7 +113,9 @@ export class MemStorage implements IStorage {
       summary: "Major discussions around continued delays of the Mavic 4 Pro in US markets, with users debating firmware availability and comparing performance against FPV rigs. Key concerns include ND filter setups and panning stutter issues.",
       sourceId: redditSource.id,
       categoryId: dronesCategory.id,
-      originalUrl: "https://reddit.com/r/drones/mavic-4-pro-delays",
+      url: "https://reddit.com/r/drones/mavic-4-pro-delays",
+      source: "Reddit",
+      sentiment: "neutral",
       author: "DroneEnthusiast2024",
       publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
       engagement: {
@@ -133,7 +135,9 @@ export class MemStorage implements IStorage {
       summary: "Commercial pilots sharing insights on the latest Part 107 renewal exam. Reports indicate focus on logistics, crowd rules, and weather patterns, with notably no sectional chart questions appearing on recent tests.",
       sourceId: redditSource.id,
       categoryId: dronesCategory.id,
-      originalUrl: "https://reddit.com/r/drones/part-107-renewal",
+      url: "https://reddit.com/r/drones/part-107-renewal",
+      source: "Reddit",
+      sentiment: "positive",
       author: "CommercialPilot",
       publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
       engagement: {
@@ -153,7 +157,9 @@ export class MemStorage implements IStorage {
       summary: "Community analyzing the technical and regulatory implications of an Amazon Prime Air drone's emergency landing in a residential Arizona area. Discussion covers safety protocols, technical failures, and regulatory responses.",
       sourceId: mavicPilotsSource.id,
       categoryId: dronesCategory.id,
-      originalUrl: "https://mavicpilots.com/amazon-drone-emergency",
+      url: "https://mavicpilots.com/amazon-drone-emergency",
+      source: "MavicPilots",
+      sentiment: "negative",
       author: "AviationNews",
       publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
       engagement: {
@@ -173,7 +179,9 @@ export class MemStorage implements IStorage {
       summary: "New FPV pilot seeking urgent advice on battery compatibility after losing included batteries for BetaFPV Cetus X. Community discussing third-party battery options and potential damage risks for beginners.",
       sourceId: redditSource.id,
       categoryId: fpvCategory.id,
-      originalUrl: "https://reddit.com/r/drones/cetus-x-battery",
+      url: "https://reddit.com/r/drones/cetus-x-battery",
+      source: "Reddit",
+      sentiment: "neutral",
       author: "FPVNewbie",
       publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
       engagement: {
@@ -193,7 +201,9 @@ export class MemStorage implements IStorage {
       summary: "Analysis of DJI's continued market leadership (80% US, 60% global) alongside speculation about upcoming releases: Mini 5 Pro with 1\" sensor + LiDAR (Summer 2025), Mavic 4 Pro launch rumors (May 13, 2025), and new Action 6 camera.",
       sourceId: dronePilotsSource.id,
       categoryId: dronesCategory.id,
-      originalUrl: "https://dronepilots.community/dji-market-analysis",
+      url: "https://dronepilots.community/dji-market-analysis",
+      source: "DronePilots.community",
+      sentiment: "positive",
       author: "MarketAnalyst",
       publishedAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
       engagement: {
@@ -249,7 +259,9 @@ export class MemStorage implements IStorage {
       summary: post.summary || null,
       sourceId: post.sourceId || null,
       categoryId: post.categoryId || null,
-      originalUrl: post.originalUrl || null,
+      url: post.url || null,
+      source: post.source || null,
+      sentiment: post.sentiment || null,
       author: post.author || null,
       publishedAt: post.publishedAt || null,
       priority: post.priority || null,

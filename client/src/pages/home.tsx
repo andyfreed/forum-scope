@@ -6,6 +6,7 @@ import SidebarFilters from "@/components/sidebar-filters";
 import StatsBar from "@/components/stats-bar";
 import TopicCard from "@/components/topic-card";
 import LiveFeed from "@/components/live-feed";
+import SocialMediaDashboard from "@/components/social-media-dashboard";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -22,6 +23,7 @@ export default function Home() {
     sortBy: 'recent'
   });
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [showSocialMedia, setShowSocialMedia] = useState(false);
 
   // Fetch categories
   const { data: categories = [] } = useQuery<Category[]>({
@@ -91,16 +93,36 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex gap-6">
           {/* Sidebar */}
-          <div className="w-64 flex-shrink-0">
+          <div className="w-64 flex-shrink-0 space-y-6">
             <SidebarFilters 
               filters={filters}
               onFiltersChange={updateFilters}
               categories={categories}
             />
+            
+            {/* Social Media Toggle */}
+            <Card className="p-4">
+              <h3 className="font-semibold text-sm mb-3">Social Media</h3>
+              <Button
+                variant={showSocialMedia ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowSocialMedia(!showSocialMedia)}
+                className="w-full"
+              >
+                {showSocialMedia ? "Hide" : "Show"} Social Dashboard
+              </Button>
+            </Card>
           </div>
 
           {/* Main Content */}
           <div className="flex-1">
+            {/* Social Media Dashboard */}
+            {showSocialMedia && (
+              <div className="mb-6">
+                <SocialMediaDashboard />
+              </div>
+            )}
+            
             {/* Live Feed */}
             <LiveFeed />
             

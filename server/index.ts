@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { schedulerService } from "./services/scheduler";
 
 const app = express();
 app.use(express.json());
@@ -38,6 +39,14 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Start scheduled tasks for social media aggregation
+  try {
+    schedulerService.startAllScheduledTasks();
+    log('Scheduled tasks started successfully');
+  } catch (error: any) {
+    log('Failed to start scheduled tasks: ' + error.message);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

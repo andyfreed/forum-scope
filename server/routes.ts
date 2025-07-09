@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { filterSchema, createCategoryFormSchema, type FilterOptions, type CreateCategoryForm } from "@shared/schema";
 import { analyzeForumContent, summarizeTopics } from "./services/openai";
 import { forumScraper } from "./services/scraper";
+import { socialMediaIntegrator } from "./services/social-media";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all categories
@@ -204,6 +205,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Scraping initiated" });
     } catch (error) {
       res.status(500).json({ message: "Scraping failed" });
+    }
+  });
+
+  // Trigger social media aggregation
+  app.post("/api/social-media/aggregate", async (req, res) => {
+    try {
+      await socialMediaIntegrator.aggregateAllSources();
+      res.json({ message: "Social media aggregation completed" });
+    } catch (error) {
+      console.error("Social media aggregation failed:", error);
+      res.status(500).json({ message: "Social media aggregation failed" });
+    }
+  });
+
+  // Get social media trending topics
+  app.get("/api/social-media/trending", async (req, res) => {
+    try {
+      const timeRange = req.query.timeRange as string || '24h';
+      const trending = await socialMediaIntegrator.getTrendingTopics(timeRange);
+      res.json(trending);
+    } catch (error) {
+      console.error("Failed to get social media trending:", error);
+      res.status(500).json({ message: "Failed to get social media trending topics" });
     }
   });
 
