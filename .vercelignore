@@ -7,7 +7,5 @@ node_modules
 .replit
 .upm
 replit.nix
-client/src
-server/src
 *.md
 .git
