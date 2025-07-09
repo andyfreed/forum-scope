@@ -2,7 +2,7 @@ import OpenAI from "openai";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key"
+  apiKey: process.env.OPENAI_API_KEY || "sk-fake-key-for-demo"
 });
 
 export interface ContentAnalysis {
@@ -14,6 +14,18 @@ export interface ContentAnalysis {
 }
 
 export async function analyzeForumContent(title: string, content: string): Promise<ContentAnalysis> {
+  // Check if we have a valid API key
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "sk-fake-key-for-demo") {
+    console.log("Using fallback analysis - no OpenAI API key configured");
+    return {
+      summary: content.substring(0, 200) + "...",
+      tags: extractBasicTags(title + " " + content),
+      priority: determinePriority(title, content),
+      trendingScore: 50,
+      sentiment: 'neutral'
+    };
+  }
+
   try {
     const prompt = `Analyze this hobby forum post and provide detailed insights in JSON format:
 
@@ -80,6 +92,16 @@ Focus on hobby-specific terminology and community interests.`;
 }
 
 export async function summarizeTopics(posts: any[]): Promise<string> {
+  // Check if we have a valid API key
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "sk-fake-key-for-demo") {
+    console.log("Using fallback summary - no OpenAI API key configured");
+    return `**Demo Mode - No OpenAI API Key Set**
+
+Current trending topics from ${posts.length} recent posts include discussions about drone regulations, new product releases, and technical troubleshooting. Users are actively sharing experiences with various models and discussing market trends.
+
+To see real AI-powered summaries, add your OpenAI API key to the environment variables.`;
+  }
+
   try {
     const topicsText = posts.map(post => 
       `Title: ${post.title}\nSummary: ${post.summary || post.content.substring(0, 100)}`

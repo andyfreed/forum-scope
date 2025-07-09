@@ -6,7 +6,7 @@ import { schedulerService } from "./services/scheduler";
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // Application specific logging, throwing, or other logic here
+  // Don't crash the application, just log the error
 });
 
 // Handle uncaught exceptions
