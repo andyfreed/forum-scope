@@ -28,11 +28,13 @@ export default function Header({ onSearch }: HeaderProps) {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <img 
-                src={logoPath} 
-                alt="ForumScope Logo" 
-                className="h-10 w-10 mr-3 rounded-full object-cover"
-              />
+              <div className="relative mr-3">
+                <img 
+                  src={logoPath} 
+                  alt="ForumScope Logo" 
+                  className="h-12 w-12 rounded-full object-cover shadow-lg border-2 border-neutral-800 bg-neutral-900 p-1"
+                />
+              </div>
               <h1 className="text-xl font-bold text-neutral-900">ForumScope</h1>
             </div>
           </div>
