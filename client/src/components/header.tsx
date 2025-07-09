@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Search, Settings, Radar, User, LogOut } from "lucide-react";
 import NotificationBell from "./notification-bell";
 import { useAuth } from "@/hooks/useAuth";
+import logoPath from "@assets/forum-scope_1752031606027.png";
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -27,7 +28,11 @@ export default function Header({ onSearch }: HeaderProps) {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <Radar className="text-primary text-2xl mr-3" />
+              <img 
+                src={logoPath} 
+                alt="ForumScope Logo" 
+                className="h-10 w-10 mr-3 rounded-full object-cover"
+              />
               <h1 className="text-xl font-bold text-neutral-900">ForumScope</h1>
             </div>
           </div>

@@ -209,8 +209,21 @@ export class SocialMediaIntegrator {
         const categoryId = categoryMap.get(categorySlug);
         if (!categoryId) continue;
 
-        // Analyze content with AI
-        const analysis = await analyzeForumContent(socialPost.title, socialPost.content);
+        // Analyze content with AI (with error handling)
+        let analysis;
+        try {
+          analysis = await analyzeForumContent(socialPost.title, socialPost.content);
+        } catch (analysisError) {
+          console.error(`AI analysis failed for "${socialPost.title}":`, analysisError);
+          // Use fallback analysis
+          analysis = {
+            summary: socialPost.content.substring(0, 200) + "...",
+            tags: [],
+            priority: 'normal' as const,
+            trendingScore: 50,
+            sentiment: 'neutral' as const
+          };
+        }
         
         // Create post object
         const newPost: InsertPost = {
