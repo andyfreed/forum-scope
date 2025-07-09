@@ -1,0 +1,50 @@
+Here’s what’s buzzing in consumer drone forums right now:
+
+⸻
+
+📸 MavicPilots / PhantomPilots (Drone Pilots Media Network)
+	•	DJI Mavic 4 Pro remains a hot topic — its continued US availability delays, firmware availability, and pros/cons of its still-unsold stock. Discussions also include ND filter setups and stutter when panning compared to FPV rigs  ￼.
+	•	First-time buyer threads: users are comparing Mini 4 Pro, Mini 4 Pro Fly‑More combos, and DJI RC Pro 2 first-use experiences  ￼.
+	•	A surprising report: Amazon delivery drone made emergency landing in an Arizona neighborhood—folks are dissecting how and why  ￼.
+
+⸻
+
+🌐 r/drones on Reddit
+	•	Airspace restrictions: Current flight restrictions in the Netherlands due to the NATO summit sparked a lively regulatory discussion  ￼.
+	•	FAA Part 107 renewals: US commercial pilots are sharing tips—one poster described the revision exam as “fairly basic,” focusing on logistics, crowd rules, weather, and no actual sectional/chart questions  ￼.
+	•	FPV drama: A BetaFPV Cetus X newbie is frantically asking:
+“should I buy any of these other options [after losing included batteries]? … will they damage my new Cetus X?” ()
+	•	Photo/video help: DJI Mini 3/4 Pro users asking about better editing apps than DJI LightCut on MacBook.
+
+⸻
+
+🛠️ DronePilots.community (DIY / non-DJI enthusiasts)
+	•	Plenty of beginner help requests on Ardupilot, CubePilot, Here3 compass setups  ￼ ￼.
+	•	Discussions around anti-drone laws, mapping courses, and adding flight telemetry into video streams  ￼.
+
+⸻
+
+🧩 Market trends & rumors
+	•	DJI dominance continues, currently holding ~80% of the U.S. market and ~60% globally. Rumors swirl on new gear: Mini 5 Pro, Mavic 4 Pro, Action 6, plus “Power 2000” dock, though dates remain murky  ￼.
+	•	Mavic 4 Pro rumored launch: May 13, 2025, featuring 6K, ~52‑minute flight, electronic ND filters—still a hot subject in fan discussions  ￼.
+	•	DJI Mini 5 Pro anticipated for summer 2025, bringing a 1″ sensor + LiDAR module  ￼.
+
+⸻
+
+🔥 What’s the hottest topic?
+	•	Mavic 4 Pro release & performance: supply issues, specs, firmware, and real-world testing.
+	•	Battery swapping compatibility for entry drones (e.g., Cetus X).
+	•	Regulatory updates: especially around restrictions (e.g., NATO summit), Part 107 changes, and noise controversies.
+	•	Editing workflows: users want better software than DJI’s LightCut, especially on Mac.
+
+⸻
+
+💬 A couple of Reddit highlights:
+
+“Did my Pt 107 renewal exam this weekend… ZERO questions about sectional charts, airport patterns…”  ￼
+
+“I have bought the Cetus X… they couldn’t ship the batteries… will they damage my new Cetus X?” ()
+
+⸻
+
+If you’re keen on rig-specific chats (like Mavic 4 Pro deep dives), FPV builds or battery hacks, or legal/regulatory changes, let me know—I can pull up more threads or do focused research!
