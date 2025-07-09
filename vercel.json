@@ -1,5 +1,5 @@
 {
-  "buildCommand": "./vercel-build.sh",
+  "buildCommand": "node migrate-db.js && npm run build",
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
   "devCommand": "npm run dev",

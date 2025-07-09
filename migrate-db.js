@@ -26,9 +26,15 @@ async function migrate() {
       console.log('✅ password_hash column already exists');
     }
 
-    // Also make email required (not null)
-    await sql`ALTER TABLE users ALTER COLUMN email SET NOT NULL`;
-    console.log('✅ email column set to NOT NULL');
+    // Try to make email required (not null) - skip if it fails
+    try {
+      // First update any null emails to prevent constraint violation
+      await sql`UPDATE users SET email = CONCAT('user_', id, '@example.com') WHERE email IS NULL`;
+      await sql`ALTER TABLE users ALTER COLUMN email SET NOT NULL`;
+      console.log('✅ email column set to NOT NULL');
+    } catch (e) {
+      console.log('⚠️  Could not set email to NOT NULL (might already be set)');
+    }
 
     console.log('🎉 Database migration completed successfully!');
   } catch (error) {

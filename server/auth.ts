@@ -8,6 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '7d';
 
+// Log warning if using default secret
+if (!process.env.JWT_SECRET) {
+  console.warn('⚠️  WARNING: Using default JWT secret. Set JWT_SECRET environment variable in production!');
+}
+
 export interface AuthRequest extends Request {
   user?: {
     id: string;
@@ -36,32 +41,37 @@ export function verifyToken(token: string): { id: string; email: string } | null
 }
 
 export async function authenticateToken(req: AuthRequest, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
-  if (!token) {
-    // Check cookie as fallback
-    const cookieToken = req.cookies?.token;
-    if (!cookieToken) {
-      return res.status(401).json({ error: 'Authentication required' });
+    if (!token) {
+      // Check cookie as fallback
+      const cookieToken = req.cookies?.token;
+      if (!cookieToken) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      
+      const user = verifyToken(cookieToken);
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+      
+      req.user = user;
+      return next();
     }
-    
-    const user = verifyToken(cookieToken);
+
+    const user = verifyToken(token);
     if (!user) {
       return res.status(401).json({ error: 'Invalid token' });
     }
-    
+
     req.user = user;
-    return next();
+    next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    return res.status(401).json({ error: 'Authentication failed' });
   }
-
-  const user = verifyToken(token);
-  if (!user) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
-
-  req.user = user;
-  next();
 }
 
 export async function optionalAuth(req: AuthRequest, res: Response, next: NextFunction) {

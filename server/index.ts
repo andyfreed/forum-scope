@@ -58,6 +58,14 @@ async function initializeApp() {
   if (initialized) return;
   initialized = true;
   
+  console.log('🚀 Initializing app for Vercel serverless...');
+  console.log('Environment:', { 
+    NODE_ENV: process.env.NODE_ENV,
+    VERCEL: process.env.VERCEL,
+    hasJWT: !!process.env.JWT_SECRET,
+    hasDB: !!process.env.DATABASE_URL
+  });
+  
   await registerRoutes(app);
   
   // Add error handler
@@ -65,12 +73,12 @@ async function initializeApp() {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    console.error('Express error handler:', err);
     res.status(status).json({ message });
-    throw err;
   });
   
-  // Serve static files in production
-  if (process.env.NODE_ENV === "production") {
+  // Serve static files in production (but not in Vercel)
+  if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
     serveStatic(app);
   }
 }
