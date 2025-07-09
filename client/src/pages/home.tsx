@@ -1,0 +1,172 @@
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import Header from "@/components/header";
+import SidebarFilters from "@/components/sidebar-filters";
+import StatsBar from "@/components/stats-bar";
+import TopicCard from "@/components/topic-card";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Grid3x3, List, Loader2 } from "lucide-react";
+import type { Post, Category, FilterOptions } from "@shared/schema";
+
+export default function Home() {
+  const [location] = useLocation();
+  const categorySlug = location.split('/')[2]; // Extract slug from /category/:slug
+  
+  const [filters, setFilters] = useState<FilterOptions>({
+    categories: categorySlug ? [categorySlug] : ['drones'],
+    timeRange: '24h',
+    sortBy: 'recent'
+  });
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+
+  // Fetch categories
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ['/api/categories'],
+  });
+
+  // Fetch posts with filters
+  const { data: posts = [], isLoading } = useQuery<Post[]>({
+    queryKey: ['/api/posts', filters],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (filters.categories?.length) params.set('categories', filters.categories.join(','));
+      if (filters.sources?.length) params.set('sources', filters.sources.join(','));
+      if (filters.timeRange) params.set('timeRange', filters.timeRange);
+      if (filters.sortBy) params.set('sortBy', filters.sortBy);
+      if (filters.search) params.set('search', filters.search);
+      
+      const response = await fetch(`/api/posts?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch posts');
+      return response.json();
+    },
+  });
+
+  // Get current category for display
+  const currentCategory = categories.find(c => c.slug === (filters.categories?.[0] || 'drones'));
+
+  const updateFilters = (newFilters: Partial<FilterOptions>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  };
+
+  const priorityColors = {
+    hot: 'bg-accent-orange text-white',
+    trending: 'bg-success text-white', 
+    news: 'bg-yellow-500 text-white',
+    help: 'bg-purple-500 text-white',
+    market: 'bg-indigo-500 text-white',
+    normal: 'bg-neutral-400 text-white'
+  };
+
+  const priorityIcons = {
+    hot: '🔥',
+    trending: '📈',
+    news: '⚠️',
+    help: '❓',
+    market: '📊',
+    normal: '📄'
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-50">
+        <Header onSearch={(query) => updateFilters({ search: query })} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-neutral-50">
+      <Header onSearch={(query) => updateFilters({ search: query })} />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex gap-6">
+          {/* Sidebar */}
+          <div className="w-64 flex-shrink-0">
+            <SidebarFilters 
+              filters={filters}
+              onFiltersChange={updateFilters}
+              categories={categories}
+            />
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1">
+            {/* Stats Bar */}
+            <StatsBar categorySlug={currentCategory?.slug} />
+
+            {/* Content Controls */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <h2 className="text-xl font-semibold text-neutral-900">
+                  Trending in {currentCategory?.name || 'All Categories'}
+                </h2>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">Live</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Select value={filters.sortBy} onValueChange={(value: any) => updateFilters({ sortBy: value })}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recent">Most Recent</SelectItem>
+                    <SelectItem value="popular">Most Popular</SelectItem>
+                    <SelectItem value="discussed">Most Discussed</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                >
+                  <Grid3x3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Topic Cards */}
+            {posts.length === 0 ? (
+              <Card className="p-8 text-center">
+                <p className="text-neutral-600">No posts found matching your filters.</p>
+              </Card>
+            ) : (
+              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'space-y-4'}>
+                {posts.map((post) => (
+                  <TopicCard 
+                    key={post.id} 
+                    post={post}
+                    priorityColor={priorityColors[post.priority || 'normal']}
+                    priorityIcon={priorityIcons[post.priority || 'normal']}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Load More */}
+            {posts.length > 0 && (
+              <div className="text-center mt-8">
+                <Button className="bg-primary text-white hover:bg-blue-700">
+                  Load More Topics
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
