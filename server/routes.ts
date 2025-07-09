@@ -22,6 +22,20 @@ export async function registerRoutes(app: Express): Promise<Server | void> {
     res.json(mockUser);
   });
 
+  // Demo login endpoint - just redirects back to home
+  app.get('/api/login', async (req, res) => {
+    // In a real app, this would handle authentication
+    // For demo, we just redirect back to the app
+    res.redirect('/');
+  });
+
+  // Demo logout endpoint
+  app.get('/api/logout', async (req, res) => {
+    // In a real app, this would clear the session
+    // For demo, we just redirect back to the app
+    res.redirect('/');
+  });
+
   // Get all categories
   app.get("/api/categories", async (req, res) => {
     try {
