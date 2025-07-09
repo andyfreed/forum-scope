@@ -1,0 +1,45 @@
+[00:43:23.940] Running build in Washington, D.C., USA (East) – iad1
+[00:43:23.941] Build machine configuration: 2 cores, 8 GB
+[00:43:24.014] Cloning github.com/andyfreed/forum-scope (Branch: main, Commit: 969353e)
+[00:43:24.334] Previous build caches not available
+[00:43:24.939] Cloning completed: 924.000ms
+[00:43:25.016] Found .vercelignore
+[00:43:25.078] Removed 103 ignored files defined in .vercelignore
+[00:43:25.078]   /.git/config
+[00:43:25.078]   /.git/description
+[00:43:25.078]   /.git/FETCH_HEAD
+[00:43:25.079]   /.git/HEAD
+[00:43:25.079]   /.git/hooks/applypatch-msg.sample
+[00:43:25.079]   /.git/hooks/commit-msg.sample
+[00:43:25.079]   /.git/hooks/fsmonitor-watchman.sample
+[00:43:25.079]   /.git/hooks/post-update.sample
+[00:43:25.080]   /.git/hooks/pre-applypatch.sample
+[00:43:25.080]   /.git/hooks/pre-commit.sample
+[00:43:25.495] Running "vercel build"
+[00:43:25.964] Vercel CLI 44.2.13
+[00:43:26.669] Installing dependencies...
+[00:43:32.378] npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+[00:43:32.463] npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+[00:43:36.997] 
+[00:43:36.998] added 542 packages in 10s
+[00:43:36.998] 
+[00:43:36.998] 85 packages are looking for funding
+[00:43:36.998]   run `npm fund` for details
+[00:43:37.185] 
+[00:43:37.186] > rest-express@1.0.0 build
+[00:43:37.186] > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+[00:43:37.186] 
+[00:43:37.435] [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+[00:43:37.483] transforming...
+[00:43:37.508] [32m✓[39m 2 modules transformed.
+[00:43:37.510] [31mx[39m Build failed in 51ms
+[00:43:37.511] [31merror during build:
+[00:43:37.511] [31mCould not resolve "./src/main.tsx" from "client/index.html"[31m
+[00:43:37.511] file: [36m/vercel/path0/client/index.html[31m
+[00:43:37.512]     at getRollupError (file:///vercel/path0/node_modules/rollup/dist/es/shared/parseAst.js:396:41)
+[00:43:37.512]     at error (file:///vercel/path0/node_modules/rollup/dist/es/shared/parseAst.js:392:42)
+[00:43:37.512]     at ModuleLoader.handleInvalidResolvedId (file:///vercel/path0/node_modules/rollup/dist/es/shared/node-entry.js:20065:24)
+[00:43:37.512]     at file:///vercel/path0/node_modules/rollup/dist/es/shared/node-entry.js:20025:26[39m
+[00:43:37.527] Error: Command "npm run build" exited with 1
+[00:43:37.740] 
+[00:43:40.647] Exiting build container
