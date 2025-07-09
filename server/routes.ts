@@ -246,6 +246,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(mockUser);
   });
 
+  // Vote on a post
+  app.post('/api/posts/:id/vote', async (req, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const { voteType } = req.body;
+      const userId = '1'; // Mock user ID - in production this would come from auth
+
+      if (!voteType || !['upvote', 'downvote'].includes(voteType)) {
+        return res.status(400).json({ message: 'Invalid vote type' });
+      }
+
+      await storage.votePost(userId, postId, voteType);
+      const post = await storage.getPostById(postId);
+      
+      res.json({ 
+        success: true, 
+        upvotes: post?.upvotes || 0,
+        downvotes: post?.downvotes || 0,
+        userScore: post?.userScore || 0
+      });
+    } catch (error) {
+      console.error('Vote error:', error);
+      res.status(500).json({ message: 'Failed to vote on post' });
+    }
+  });
+
+  // Get user's vote for a post
+  app.get('/api/posts/:id/vote', async (req, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const userId = '1'; // Mock user ID
+
+      const vote = await storage.getUserVote(userId, postId);
+      res.json({ vote: vote?.voteType || null });
+    } catch (error) {
+      console.error('Get vote error:', error);
+      res.status(500).json({ message: 'Failed to get vote' });
+    }
+  });
+
+  // Curate a post
+  app.post('/api/posts/:id/curate', async (req, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const { curationType, reason } = req.body;
+      const userId = '1'; // Mock user ID
+
+      if (!curationType || !['bookmark', 'feature', 'hide', 'report'].includes(curationType)) {
+        return res.status(400).json({ message: 'Invalid curation type' });
+      }
+
+      await storage.curatePost(userId, postId, curationType, reason);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Curation error:', error);
+      res.status(500).json({ message: 'Failed to curate post' });
+    }
+  });
+
+  // Get user's curations
+  app.get('/api/curations', async (req, res) => {
+    try {
+      const userId = '1'; // Mock user ID
+      const curations = await storage.getUserCurations(userId);
+      res.json(curations);
+    } catch (error) {
+      console.error('Get curations error:', error);
+      res.status(500).json({ message: 'Failed to get curations' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

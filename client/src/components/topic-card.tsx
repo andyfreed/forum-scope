@@ -1,7 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ExternalLink, MessageCircle, Heart, Eye } from "lucide-react";
+import { ExternalLink, MessageCircle, Heart, Eye, Crown } from "lucide-react";
 import type { Post } from "@shared/schema";
+import VotingButtons from "./voting-buttons";
+import CurationMenu from "./curation-menu";
 
 interface TopicCardProps {
   post: Post;
@@ -55,6 +57,12 @@ export default function TopicCard({ post, priorityColor, priorityIcon }: TopicCa
                   Trending {post.trendingScore}%
                 </Badge>
               )}
+              {post.isCurated && (
+                <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-300">
+                  <Crown className="h-3 w-3 mr-1" />
+                  Featured
+                </Badge>
+              )}
             </div>
             <h3 className="text-lg font-semibold text-neutral-900 leading-tight mb-2">
               {post.title}
@@ -70,14 +78,21 @@ export default function TopicCard({ post, priorityColor, priorityIcon }: TopicCa
               )}
             </div>
           </div>
-          <a 
-            href={post.url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="ml-4 text-neutral-400 hover:text-primary transition-colors"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </a>
+          <div className="flex items-center gap-2">
+            <CurationMenu 
+              postId={post.id} 
+              isCurated={post.isCurated} 
+              className="text-neutral-400 hover:text-primary" 
+            />
+            <a 
+              href={post.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-neutral-400 hover:text-primary transition-colors"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -96,34 +111,38 @@ export default function TopicCard({ post, priorityColor, priorityIcon }: TopicCa
           </div>
         )}
 
-        {/* Engagement metrics */}
-        {post.engagement && (
-          <div className="flex items-center text-xs text-neutral-500 space-x-4 pt-2 border-t border-neutral-100">
-            {post.engagement.comments && (
-              <div className="flex items-center space-x-1">
-                <MessageCircle className="h-3 w-3" />
-                <span>{post.engagement.comments}</span>
-              </div>
-            )}
-            {post.engagement.upvotes && (
-              <div className="flex items-center space-x-1">
-                <Heart className="h-3 w-3" />
-                <span>{post.engagement.upvotes}</span>
-              </div>
-            )}
-            {post.engagement.views && (
-              <div className="flex items-center space-x-1">
-                <Eye className="h-3 w-3" />
-                <span>{post.engagement.views}</span>
-              </div>
-            )}
-            {post.engagement.upvotePercentage && (
-              <span className="text-green-600">
-                {post.engagement.upvotePercentage}% upvoted
-              </span>
-            )}
-          </div>
-        )}
+        {/* Community voting and engagement */}
+        <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
+          <VotingButtons 
+            postId={post.id}
+            initialUpvotes={post.upvotes || 0}
+            initialDownvotes={post.downvotes || 0}
+            initialUserScore={post.userScore || 0}
+          />
+          
+          {/* Original engagement metrics */}
+          {post.engagement && (
+            <div className="flex items-center text-xs text-neutral-500 space-x-4">
+              {post.engagement.comments && (
+                <div className="flex items-center space-x-1">
+                  <MessageCircle className="h-3 w-3" />
+                  <span>{post.engagement.comments}</span>
+                </div>
+              )}
+              {post.engagement.views && (
+                <div className="flex items-center space-x-1">
+                  <Eye className="h-3 w-3" />
+                  <span>{post.engagement.views}</span>
+                </div>
+              )}
+              {post.engagement.upvotePercentage && (
+                <span className="text-green-600">
+                  {post.engagement.upvotePercentage}% upvoted
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

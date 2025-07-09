@@ -127,3 +127,7 @@ Currently implements session-based authentication using:
 - ✓ **Enhanced AI Analysis**: Improved OpenAI prompts for better hobby community understanding
 - ✓ **Notification System**: Smart notification bell with priority-based alerts
 - ✓ **Better UI Organization**: Cleaner sidebar with priority filters and category management
+- ✓ **Community Voting System**: Users can upvote/downvote posts with real-time vote counts
+- ✓ **User-Generated Curation**: Bookmark, feature, hide, and report posts with community moderation
+- ✓ **Community Score Sorting**: New sorting option based on community voting patterns
+- ✓ **Advanced Post Management**: Featured posts display with crown badges and curation menu

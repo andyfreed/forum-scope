@@ -146,6 +146,7 @@ export default function Home() {
                     <SelectItem value="recent">Most Recent</SelectItem>
                     <SelectItem value="popular">Most Popular</SelectItem>
                     <SelectItem value="discussed">Most Discussed</SelectItem>
+                    <SelectItem value="community">Community Score</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button

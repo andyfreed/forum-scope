@@ -40,6 +40,12 @@ export const posts = pgTable("posts", {
   tags: text("tags").array(),
   trendingScore: integer("trending_score").default(0),
   priority: text("priority").default("normal"), // 'hot', 'trending', 'news', 'help', 'market', 'normal'
+  upvotes: integer("upvotes").default(0),
+  downvotes: integer("downvotes").default(0),
+  userScore: integer("user_score").default(0), // Community-driven score
+  isCurated: boolean("is_curated").default(false),
+  curatedBy: text("curated_by"),
+  curatedAt: timestamp("curated_at"),
 });
 
 export const analytics = pgTable("analytics", {
@@ -73,8 +79,9 @@ export const filterSchema = z.object({
   sources: z.array(z.string()).optional(),
   priorities: z.array(z.string()).optional(),
   timeRange: z.enum(['24h', '7d', '30d', 'all']).optional(),
-  sortBy: z.enum(['recent', 'popular', 'discussed']).optional(),
+  sortBy: z.enum(['recent', 'popular', 'discussed', 'community']).optional(),
   search: z.string().optional(),
+  curationFilter: z.enum(['all', 'curated', 'uncurated']).optional(),
 });
 
 export type FilterOptions = z.infer<typeof filterSchema>;
@@ -87,3 +94,30 @@ export const createCategoryFormSchema = insertCategorySchema.extend({
 });
 
 export type CreateCategoryForm = z.infer<typeof createCategoryFormSchema>;
+
+// User votes table
+export const userVotes = pgTable("user_votes", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  postId: integer("post_id").references(() => posts.id).notNull(),
+  voteType: text("vote_type").notNull(), // 'upvote', 'downvote'
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User content curation table
+export const userCurations = pgTable("user_curations", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  postId: integer("post_id").references(() => posts.id).notNull(),
+  curationType: text("curation_type").notNull(), // 'bookmark', 'feature', 'hide', 'report'
+  reason: text("reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertUserVoteSchema = createInsertSchema(userVotes).omit({ id: true, createdAt: true });
+export const insertUserCurationSchema = createInsertSchema(userCurations).omit({ id: true, createdAt: true });
+
+export type UserVote = typeof userVotes.$inferSelect;
+export type UserCuration = typeof userCurations.$inferSelect;
+export type InsertUserVote = z.infer<typeof insertUserVoteSchema>;
+export type InsertUserCuration = z.infer<typeof insertUserCurationSchema>;

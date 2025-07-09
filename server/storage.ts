@@ -1,4 +1,4 @@
-import { categories, sources, posts, analytics, type Category, type Source, type Post, type Analytics, type InsertCategory, type InsertSource, type InsertPost, type InsertAnalytics, type FilterOptions } from "@shared/schema";
+import { categories, sources, posts, analytics, userVotes, userCurations, type Category, type Source, type Post, type Analytics, type InsertCategory, type InsertSource, type InsertPost, type InsertAnalytics, type FilterOptions, type UserVote, type UserCuration, type InsertUserVote, type InsertUserCuration } from "@shared/schema";
 
 export interface IStorage {
   // Categories
@@ -27,6 +27,12 @@ export interface IStorage {
 
   // Search
   searchPosts(query: string, filters?: FilterOptions): Promise<Post[]>;
+
+  // Voting and Curation
+  votePost(userId: string, postId: number, voteType: 'upvote' | 'downvote'): Promise<void>;
+  getUserVote(userId: string, postId: number): Promise<UserVote | undefined>;
+  curatePost(userId: string, postId: number, curationType: string, reason?: string): Promise<void>;
+  getUserCurations(userId: string): Promise<UserCuration[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -34,6 +40,8 @@ export class MemStorage implements IStorage {
   private sources: Map<number, Source>;
   private posts: Map<number, Post>;
   private analytics: Map<number, Analytics>;
+  private votes: Map<string, UserVote>; // key: userId-postId
+  private curations: Map<number, UserCuration>;
   private currentId: number;
 
   constructor() {
@@ -41,6 +49,8 @@ export class MemStorage implements IStorage {
     this.sources = new Map();
     this.posts = new Map();
     this.analytics = new Map();
+    this.votes = new Map();
+    this.curations = new Map();
     this.currentId = 1;
 
     // Initialize with sample data
@@ -267,7 +277,13 @@ export class MemStorage implements IStorage {
       priority: post.priority || null,
       engagement: post.engagement || null,
       tags: post.tags || null,
-      trendingScore: post.trendingScore || null
+      trendingScore: post.trendingScore || 0,
+      upvotes: post.upvotes || 0,
+      downvotes: post.downvotes || 0,
+      userScore: post.userScore || 0,
+      isCurated: post.isCurated || false,
+      curatedBy: post.curatedBy || null,
+      curatedAt: post.curatedAt || null
     };
     this.posts.set(id, newPost);
     return newPost;
@@ -441,12 +457,89 @@ export class MemStorage implements IStorage {
         return posts.sort((a, b) => (b.trendingScore || 0) - (a.trendingScore || 0));
       case 'discussed':
         return posts.sort((a, b) => (b.engagement?.comments || 0) - (a.engagement?.comments || 0));
+      case 'community':
+        return posts.sort((a, b) => (b.userScore || 0) - (a.userScore || 0));
       case 'recent':
       default:
         return posts.sort((a, b) => 
           (b.publishedAt?.getTime() || 0) - (a.publishedAt?.getTime() || 0)
         );
     }
+  }
+
+  // Voting and Curation Methods
+  async votePost(userId: string, postId: number, voteType: 'upvote' | 'downvote'): Promise<void> {
+    const voteKey = `${userId}-${postId}`;
+    const existingVote = this.votes.get(voteKey);
+    const post = this.posts.get(postId);
+    
+    if (!post) throw new Error("Post not found");
+
+    // Remove existing vote if any
+    if (existingVote) {
+      if (existingVote.voteType === 'upvote') {
+        post.upvotes = Math.max(0, (post.upvotes || 0) - 1);
+      } else {
+        post.downvotes = Math.max(0, (post.downvotes || 0) - 1);
+      }
+      this.votes.delete(voteKey);
+    }
+
+    // Add new vote if different from existing
+    if (!existingVote || existingVote.voteType !== voteType) {
+      const newVote: UserVote = {
+        id: this.currentId++,
+        userId,
+        postId,
+        voteType,
+        createdAt: new Date()
+      };
+      
+      this.votes.set(voteKey, newVote);
+      
+      if (voteType === 'upvote') {
+        post.upvotes = (post.upvotes || 0) + 1;
+      } else {
+        post.downvotes = (post.downvotes || 0) + 1;
+      }
+    }
+
+    // Update community score
+    post.userScore = (post.upvotes || 0) - (post.downvotes || 0);
+    this.posts.set(postId, post);
+  }
+
+  async getUserVote(userId: string, postId: number): Promise<UserVote | undefined> {
+    const voteKey = `${userId}-${postId}`;
+    return this.votes.get(voteKey);
+  }
+
+  async curatePost(userId: string, postId: number, curationType: string, reason?: string): Promise<void> {
+    const post = this.posts.get(postId);
+    if (!post) throw new Error("Post not found");
+
+    const curation: UserCuration = {
+      id: this.currentId++,
+      userId,
+      postId,
+      curationType,
+      reason: reason || null,
+      createdAt: new Date()
+    };
+
+    this.curations.set(curation.id, curation);
+
+    // Update post curation status if this is a feature action
+    if (curationType === 'feature') {
+      post.isCurated = true;
+      post.curatedBy = userId;
+      post.curatedAt = new Date();
+      this.posts.set(postId, post);
+    }
+  }
+
+  async getUserCurations(userId: string): Promise<UserCuration[]> {
+    return Array.from(this.curations.values()).filter(c => c.userId === userId);
   }
 }
 
