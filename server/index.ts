@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { schedulerService } from "./services/scheduler";
+import { seedDatabase } from "./seed-database";
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
@@ -51,6 +52,14 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Seed database with initial data
+  try {
+    await seedDatabase();
+    log('Database seeded successfully');
+  } catch (error: any) {
+    log('Failed to seed database: ' + error.message);
+  }
 
   // Start scheduled tasks for social media aggregation
   try {
