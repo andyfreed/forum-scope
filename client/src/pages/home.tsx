@@ -24,6 +24,8 @@ export default function Home() {
   });
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showSocialMedia, setShowSocialMedia] = useState(false);
+  const [displayLimit, setDisplayLimit] = useState(10);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Fetch categories
   const { data: categories = [] } = useQuery<Category[]>({
@@ -53,6 +55,15 @@ export default function Home() {
 
   const updateFilters = (newFilters: Partial<FilterOptions>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
+    setDisplayLimit(10); // Reset display limit when filters change
+  };
+
+  const handleLoadMore = async () => {
+    setIsLoadingMore(true);
+    // Simulate loading delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setDisplayLimit(prev => prev + 10);
+    setIsLoadingMore(false);
   };
 
   const priorityColors = {
@@ -173,7 +184,7 @@ export default function Home() {
               </Card>
             ) : (
               <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'space-y-4'}>
-                {posts.map((post) => (
+                {posts.slice(0, displayLimit).map((post) => (
                   <TopicCard 
                     key={post.id} 
                     post={post}
@@ -185,10 +196,21 @@ export default function Home() {
             )}
 
             {/* Load More */}
-            {posts.length > 0 && (
+            {posts.length > displayLimit && (
               <div className="text-center mt-8">
-                <Button className="bg-primary text-white hover:bg-blue-700">
-                  Load More Topics
+                <Button 
+                  className="bg-primary text-white hover:bg-blue-700"
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                >
+                  {isLoadingMore ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Loading...
+                    </>
+                  ) : (
+                    `Load More Topics (${posts.length - displayLimit} remaining)`
+                  )}
                 </Button>
               </div>
             )}
