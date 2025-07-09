@@ -7,7 +7,7 @@ import { forumScraper } from "./services/scraper";
 import { socialMediaIntegrator } from "./services/social-media";
 
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<Server | void> {
   // Demo auth endpoint
   app.get('/api/auth/user', async (req, res) => {
     const mockUser = {
@@ -319,6 +319,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
+  // Only create server if not in Vercel environment
+  if (!process.env.VERCEL) {
+    const httpServer = createServer(app);
+    return httpServer;
+  }
 }
