@@ -1,0 +1,51 @@
+[00:41:12.356] Running build in Washington, D.C., USA (East) – iad1
+[00:41:12.358] Build machine configuration: 2 cores, 8 GB
+[00:41:12.437] Cloning github.com/andyfreed/forum-scope (Branch: main, Commit: bd8e18c)
+[00:41:12.774] Previous build caches not available
+[00:41:12.974] Cloning completed: 536.000ms
+[00:41:13.025] Found .vercelignore
+[00:41:13.050] Removed 103 ignored files defined in .vercelignore
+[00:41:13.050]   /.git/config
+[00:41:13.050]   /.git/description
+[00:41:13.050]   /.git/FETCH_HEAD
+[00:41:13.050]   /.git/HEAD
+[00:41:13.050]   /.git/hooks/applypatch-msg.sample
+[00:41:13.050]   /.git/hooks/commit-msg.sample
+[00:41:13.050]   /.git/hooks/fsmonitor-watchman.sample
+[00:41:13.051]   /.git/hooks/post-update.sample
+[00:41:13.051]   /.git/hooks/pre-applypatch.sample
+[00:41:13.052]   /.git/hooks/pre-commit.sample
+[00:41:13.442] Running "vercel build"
+[00:41:13.879] Vercel CLI 44.2.13
+[00:41:14.583] Installing dependencies...
+[00:41:19.449] npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+[00:41:19.478] npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+[00:41:24.958] 
+[00:41:24.959] added 542 packages in 10s
+[00:41:24.960] 
+[00:41:24.960] 85 packages are looking for funding
+[00:41:24.960]   run `npm fund` for details
+[00:41:25.134] 
+[00:41:25.135] > rest-express@1.0.0 build
+[00:41:25.135] > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+[00:41:25.135] 
+[00:41:25.449] [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+[00:41:25.497] transforming...
+[00:41:25.519] [32m✓[39m 2 modules transformed.
+[00:41:25.524] [31mx[39m Build failed in 52ms
+[00:41:25.525] [31merror during build:
+[00:41:25.525] [31m[vite]: Rollup failed to resolve import "/src/main.tsx" from "/vercel/path0/client/index.html".
+[00:41:25.526] This is most likely unintended because it can break your application at runtime.
+[00:41:25.526] If you do want to externalize this module explicitly add it to
+[00:41:25.526] `build.rollupOptions.external`[31m
+[00:41:25.527]     at viteWarn (file:///vercel/path0/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:65839:17)
+[00:41:25.527]     at onwarn (file:///vercel/path0/node_modules/@vitejs/plugin-react/dist/index.mjs:280:9)
+[00:41:25.527]     at onRollupWarning (file:///vercel/path0/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:65869:5)
+[00:41:25.527]     at onwarn (file:///vercel/path0/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:65534:7)
+[00:41:25.528]     at file:///vercel/path0/node_modules/rollup/dist/es/shared/node-entry.js:19452:13
+[00:41:25.528]     at Object.logger [as onLog] (file:///vercel/path0/node_modules/rollup/dist/es/shared/node-entry.js:21178:9)
+[00:41:25.528]     at ModuleLoader.handleInvalidResolvedId (file:///vercel/path0/node_modules/rollup/dist/es/shared/node-entry.js:20067:26)
+[00:41:25.528]     at file:///vercel/path0/node_modules/rollup/dist/es/shared/node-entry.js:20025:26[39m
+[00:41:25.542] Error: Command "npm run build" exited with 1
+[00:41:25.764] 
+[00:41:28.482] Exiting build container
