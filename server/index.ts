@@ -123,10 +123,7 @@ if (!process.env.VERCEL) {
       log(`serving on port ${port}`);
     });
   })();
-} else {
-  // For Vercel, just initialize the app
-  initializeApp().catch(console.error);
 }
 
-// Export app for Vercel serverless functions
-export { app };
+// Export app and initialization for Vercel serverless functions
+export { app, initializeApp };
