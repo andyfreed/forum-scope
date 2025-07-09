@@ -1,4 +1,4 @@
-import { categories, sources, posts, analytics, userVotes, userCurations, type Category, type Source, type Post, type Analytics, type InsertCategory, type InsertSource, type InsertPost, type InsertAnalytics, type FilterOptions, type UserVote, type UserCuration, type InsertUserVote, type InsertUserCuration } from "@shared/schema";
+import { categories, sources, posts, analytics, userVotes, userCurations, users, type Category, type Source, type Post, type Analytics, type InsertCategory, type InsertSource, type InsertPost, type InsertAnalytics, type FilterOptions, type UserVote, type UserCuration, type InsertUserVote, type InsertUserCuration, type User, type UpsertUser } from "@shared/schema";
 
 export interface IStorage {
   // Categories
@@ -33,6 +33,11 @@ export interface IStorage {
   getUserVote(userId: string, postId: number): Promise<UserVote | undefined>;
   curatePost(userId: string, postId: number, curationType: string, reason?: string): Promise<void>;
   getUserCurations(userId: string): Promise<UserCuration[]>;
+
+  // User operations
+  // (IMPORTANT) these user operations are mandatory for Replit Auth.
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
 }
 
 export class MemStorage implements IStorage {
@@ -42,6 +47,7 @@ export class MemStorage implements IStorage {
   private analytics: Map<number, Analytics>;
   private votes: Map<string, UserVote>; // key: userId-postId
   private curations: Map<number, UserCuration>;
+  private users: Map<string, User>;
   private currentId: number;
 
   constructor() {
@@ -51,6 +57,7 @@ export class MemStorage implements IStorage {
     this.analytics = new Map();
     this.votes = new Map();
     this.curations = new Map();
+    this.users = new Map();
     this.currentId = 1;
 
     // Initialize with sample data
@@ -540,6 +547,27 @@ export class MemStorage implements IStorage {
 
   async getUserCurations(userId: string): Promise<UserCuration[]> {
     return Array.from(this.curations.values()).filter(c => c.userId === userId);
+  }
+
+  // User operations
+  // (IMPORTANT) these user operations are mandatory for Replit Auth.
+  async getUser(id: string): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const existingUser = this.users.get(userData.id);
+    const user: User = {
+      ...userData,
+      createdAt: existingUser?.createdAt || new Date(),
+      updatedAt: new Date(),
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+    };
+    this.users.set(userData.id, user);
+    return user;
   }
 }
 
