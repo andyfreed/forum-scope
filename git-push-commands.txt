@@ -1,0 +1,16 @@
+# Open the Shell tab in Replit and run these commands:
+
+# 1. First, remove the lock file
+rm -f .git/index.lock
+
+# 2. Add all files
+git add .
+
+# 3. Commit with message
+git commit -m "Production-ready ForumScope with PostgreSQL database, voting system, and load more pagination"
+
+# 4. Push to GitHub
+git push origin main
+
+# If you get authentication errors, use your GitHub username and Personal Access Token as password
+# To create a token: GitHub → Settings → Developer settings → Personal access tokens → Generate new token (with 'repo' permissions)
