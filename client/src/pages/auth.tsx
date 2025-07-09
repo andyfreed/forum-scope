@@ -71,11 +71,11 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Welcome to ForumScope</CardTitle>
-          <CardDescription className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-4 px-4 sm:py-12 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-center">Welcome to ForumScope</CardTitle>
+          <CardDescription className="text-center text-sm sm:text-base">
             Sign in to your account or create a new one
           </CardDescription>
         </CardHeader>
@@ -124,7 +124,7 @@ export default function Auth() {
             
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
@@ -177,7 +177,7 @@ export default function Auth() {
           </Tabs>
         </CardContent>
         <CardFooter>
-          <p className="text-center text-sm text-gray-600 w-full">
+          <p className="text-center text-xs sm:text-sm text-gray-600 w-full">
             By signing in, you agree to our Terms of Service and Privacy Policy
           </p>
         </CardFooter>

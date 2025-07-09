@@ -80,7 +80,7 @@ export default function VotingButtons({
     voteMutation.mutate(voteType);
   };
 
-  const currentVote = userVote?.vote;
+  const currentVote = userVote && 'vote' in userVote ? userVote.vote : null;
   const isUpvoted = currentVote === 'upvote';
   const isDownvoted = currentVote === 'downvote';
 

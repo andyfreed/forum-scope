@@ -53,24 +53,26 @@ export default function Header({ onSearch }: HeaderProps) {
           </div>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-2xl mx-8">
+          <div className="flex-1 max-w-2xl mx-4 sm:mx-8">
             <form onSubmit={handleSearch} className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-neutral-400" />
               </div>
               <Input
                 type="text"
-                placeholder="Search topics, forums, or discussions..."
+                placeholder="Search topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-neutral-300 rounded-lg leading-5 bg-white placeholder-neutral-500 focus:outline-none focus:placeholder-neutral-400 focus:ring-2 focus:ring-primary focus:border-primary"
+                className="block w-full pl-10 pr-3 py-2 border border-neutral-300 rounded-lg leading-5 bg-white placeholder-neutral-500 focus:outline-none focus:placeholder-neutral-400 focus:ring-2 focus:ring-primary focus:border-primary text-sm sm:text-base"
               />
             </form>
           </div>
 
           {/* User Actions */}
-          <div className="flex items-center space-x-4">
-            <NotificationBell />
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="hidden sm:block">
+              <NotificationBell />
+            </div>
             
             {isAuthenticated && user ? (
               <DropdownMenu>

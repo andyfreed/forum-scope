@@ -101,10 +101,10 @@ export default function Home() {
     <div className="min-h-screen bg-neutral-50">
       <Header onSearch={(query) => updateFilters({ search: query })} />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex gap-6">
-          {/* Sidebar */}
-          <div className="w-64 flex-shrink-0 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Sidebar - Hidden on mobile, shown on desktop */}
+          <div className="hidden lg:block w-64 flex-shrink-0 space-y-6">
             <SidebarFilters 
               filters={filters}
               onFiltersChange={updateFilters}
@@ -126,7 +126,16 @@ export default function Home() {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
+            {/* Mobile Filters */}
+            <div className="lg:hidden mb-4">
+              <SidebarFilters 
+                filters={filters}
+                onFiltersChange={updateFilters}
+                categories={categories}
+              />
+            </div>
+            
             {/* Social Media Dashboard */}
             {showSocialMedia && (
               <div className="mb-6">
@@ -141,16 +150,16 @@ export default function Home() {
             <StatsBar categorySlug={currentCategory?.slug} />
 
             {/* Content Controls */}
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center space-x-4">
-                <h2 className="text-xl font-semibold text-neutral-900">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                <h2 className="text-lg sm:text-xl font-semibold text-neutral-900">
                   Trending in {currentCategory?.name || 'All Categories'}
                 </h2>
-                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">Live</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm w-fit">Live</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 w-full sm:w-auto">
                 <Select value={filters.sortBy} onValueChange={(value: any) => updateFilters({ sortBy: value })}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-full sm:w-40">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -160,20 +169,22 @@ export default function Home() {
                     <SelectItem value="community">Community Score</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid3x3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
+                <div className="hidden sm:flex items-center space-x-2">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <Grid3x3 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
