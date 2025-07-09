@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { filterSchema, type FilterOptions } from "@shared/schema";
+import { filterSchema, createCategoryFormSchema, type FilterOptions, type CreateCategoryForm } from "@shared/schema";
 import { analyzeForumContent, summarizeTopics } from "./services/openai";
 import { forumScraper } from "./services/scraper";
 
@@ -9,10 +9,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all categories
   app.get("/api/categories", async (req, res) => {
     try {
-      const categories = await storage.getCategories();
+      const includeInactive = req.query.includeInactive === 'true';
+      const categories = await storage.getCategories(includeInactive);
       res.json(categories);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch categories" });
+    }
+  });
+
+  // Create new category
+  app.post("/api/categories", async (req, res) => {
+    try {
+      const categoryData = createCategoryFormSchema.parse(req.body);
+      
+      // Check if slug already exists
+      const existingCategory = await storage.getCategoryBySlug(categoryData.slug);
+      if (existingCategory) {
+        return res.status(400).json({ message: "Category with this slug already exists" });
+      }
+      
+      const newCategory = await storage.createCategory(categoryData);
+      res.status(201).json(newCategory);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Invalid category data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create category" });
+    }
+  });
+
+  // Toggle category active status
+  app.patch("/api/categories/:id/toggle", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const category = await storage.getCategoryById(id);
+      
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+      
+      const updated = await storage.updateCategory(id, { isActive: !category.isActive });
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update category" });
     }
   });
 

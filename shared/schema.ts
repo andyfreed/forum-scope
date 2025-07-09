@@ -75,3 +75,12 @@ export const filterSchema = z.object({
 });
 
 export type FilterOptions = z.infer<typeof filterSchema>;
+
+// Category creation form schema
+export const createCategoryFormSchema = insertCategorySchema.extend({
+  name: z.string().min(1, "Category name is required").max(50, "Name too long"),
+  slug: z.string().min(1, "Slug is required").max(50, "Slug too long").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
+  description: z.string().max(200, "Description too long").optional(),
+});
+
+export type CreateCategoryForm = z.infer<typeof createCategoryFormSchema>;

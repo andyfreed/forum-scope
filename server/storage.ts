@@ -2,9 +2,11 @@ import { categories, sources, posts, analytics, type Category, type Source, type
 
 export interface IStorage {
   // Categories
-  getCategories(): Promise<Category[]>;
+  getCategories(includeInactive?: boolean): Promise<Category[]>;
   getCategoryBySlug(slug: string): Promise<Category | undefined>;
+  getCategoryById(id: number): Promise<Category | undefined>;
   createCategory(category: InsertCategory): Promise<Category>;
+  updateCategory(id: number, updates: Partial<InsertCategory>): Promise<Category>;
 
   // Sources
   getSources(): Promise<Source[]>;
@@ -275,16 +277,35 @@ export class MemStorage implements IStorage {
     return newAnalytics;
   }
 
-  async getCategories(): Promise<Category[]> {
-    return Array.from(this.categories.values()).filter(c => c.isActive);
+  async getCategories(includeInactive: boolean = false): Promise<Category[]> {
+    const allCategories = Array.from(this.categories.values());
+    return includeInactive ? allCategories : allCategories.filter(c => c.isActive);
   }
 
   async getCategoryBySlug(slug: string): Promise<Category | undefined> {
     return Array.from(this.categories.values()).find(c => c.slug === slug);
   }
 
+  async getCategoryById(id: number): Promise<Category | undefined> {
+    return this.categories.get(id);
+  }
+
   async createCategory(category: InsertCategory): Promise<Category> {
     return this.createCategorySync(category);
+  }
+
+  async updateCategory(id: number, updates: Partial<InsertCategory>): Promise<Category> {
+    const existing = this.categories.get(id);
+    if (!existing) throw new Error("Category not found");
+    
+    const updated: Category = { 
+      ...existing, 
+      ...updates,
+      description: updates.description !== undefined ? updates.description : existing.description,
+      isActive: updates.isActive !== undefined ? updates.isActive : existing.isActive
+    };
+    this.categories.set(id, updated);
+    return updated;
   }
 
   async getSources(): Promise<Source[]> {

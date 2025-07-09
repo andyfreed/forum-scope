@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import CategoryManager from "./category-manager";
 import type { Category, Source, FilterOptions } from "@shared/schema";
 
 interface SidebarFiltersProps {
@@ -48,9 +49,12 @@ export default function SidebarFilters({ filters, onFiltersChange, categories }:
       <CardContent className="p-6">
         {/* Categories Filter */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-neutral-900 mb-3 uppercase tracking-wide">
-            Categories
-          </h3>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-sm font-semibold text-neutral-900 uppercase tracking-wide">
+              Categories
+            </h3>
+            <CategoryManager />
+          </div>
           <div className="space-y-2">
             {categories.map((category) => (
               <label key={category.id} className="flex items-center cursor-pointer">
