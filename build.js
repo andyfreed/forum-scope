@@ -6,6 +6,12 @@ import path from 'path';
 
 console.log('🔨 Starting custom build process...');
 
+// Set NODE_ENV to production for Vercel builds
+if (process.env.VERCEL) {
+  process.env.NODE_ENV = 'production';
+  console.log('🌐 Vercel detected - using production configuration');
+}
+
 try {
   // Ensure dist directory exists
   if (!existsSync('dist')) {
@@ -27,22 +33,22 @@ try {
 
   console.log('📦 Building frontend with Vite...');
   
-  // Try simple config first, fallback to main config
+  // For production, prioritize the full application
   try {
-    console.log('🔄 Trying simple Vite config...');
-    execSync('npx vite build --config vite.simple.config.ts', { 
+    console.log('🚀 Building full ForumScope application...');
+    execSync('npx vite build --config vite.config.ts', { 
       stdio: 'inherit',
       cwd: process.cwd()
     });
-  } catch (simpleError) {
-    console.log('⚠️  Simple config failed, trying main config...');
+  } catch (mainError) {
+    console.log('⚠️  Main config failed, trying simple config...');
     try {
-      execSync('npx vite build --config vite.config.ts', { 
+      execSync('npx vite build --config vite.simple.config.ts', { 
         stdio: 'inherit',
         cwd: process.cwd()
       });
-    } catch (mainError) {
-      console.log('⚠️  Both configs failed, trying minimal config...');
+    } catch (simpleError) {
+      console.log('⚠️  Simple config failed, trying minimal config...');
       try {
         execSync('npx vite build --config vite.minimal.config.ts', { 
           stdio: 'inherit',

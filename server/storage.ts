@@ -593,5 +593,8 @@ export class MemStorage implements IStorage {
 
 import { DatabaseStorage } from './database-storage';
 
-// Switch to database storage for production
-export const storage = new DatabaseStorage();
+// Always use DatabaseStorage in production environments
+// In development, use DatabaseStorage if DATABASE_URL is available, otherwise MemStorage
+export const storage = (process.env.NODE_ENV === 'production' || process.env.VERCEL || process.env.DATABASE_URL) 
+  ? new DatabaseStorage()
+  : new MemStorage();
