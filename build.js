@@ -36,10 +36,18 @@ try {
     });
   } catch (simpleError) {
     console.log('⚠️  Simple config failed, trying main config...');
-    execSync('npx vite build --config vite.config.ts', { 
-      stdio: 'inherit',
-      cwd: process.cwd()
-    });
+    try {
+      execSync('npx vite build --config vite.config.ts', { 
+        stdio: 'inherit',
+        cwd: process.cwd()
+      });
+    } catch (mainError) {
+      console.log('⚠️  Both configs failed, trying minimal config...');
+      execSync('npx vite build --config vite.minimal.config.ts', { 
+        stdio: 'inherit',
+        cwd: process.cwd()
+      });
+    }
   }
 
   console.log('⚙️  Building server with esbuild...');
