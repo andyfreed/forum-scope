@@ -7,6 +7,17 @@ const { Pool } = pg;
 let _db: ReturnType<typeof drizzle>;
 let _pool: pg.Pool;
 
+function parseConnectionString(connectionString: string) {
+  const url = new URL(connectionString);
+  return {
+    host: url.hostname,
+    port: parseInt(url.port || '5432'),
+    database: url.pathname.slice(1),
+    user: url.username,
+    password: url.password,
+  };
+}
+
 function getDb() {
   if (!_db) {
     if (!process.env.DATABASE_URL) {
@@ -17,9 +28,18 @@ function getDb() {
       console.error('   - Supabase: https://supabase.com');
       throw new Error('DATABASE_URL environment variable is required');
     }
+    
+    // Parse connection string to force IPv4
+    const config = parseConnectionString(process.env.DATABASE_URL);
+    
     _pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+      ...config,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      // Force IPv4
+      ...(process.env.NODE_ENV === 'production' && {
+        host: config.host.replace('.supabase.co', '.supabase.co'),
+        connectionTimeoutMillis: 10000,
+      }),
     });
     _db = drizzle(_pool, { schema });
   }

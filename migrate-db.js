@@ -3,6 +3,17 @@ import pg from 'pg';
 
 const { Client } = pg;
 
+function parseConnectionString(connectionString) {
+  const url = new URL(connectionString);
+  return {
+    host: url.hostname,
+    port: parseInt(url.port || '5432'),
+    database: url.pathname.slice(1),
+    user: url.username,
+    password: url.password,
+  };
+}
+
 async function migrate() {
   if (!process.env.DATABASE_URL) {
     console.warn('⚠️  DATABASE_URL not set - skipping migration');
@@ -10,9 +21,13 @@ async function migrate() {
     process.exit(0); // Exit successfully to continue build
   }
 
+  // Parse connection string to force IPv4
+  const config = parseConnectionString(process.env.DATABASE_URL);
+  
   const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    ...config,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    connectionTimeoutMillis: 10000,
   });
 
   try {
