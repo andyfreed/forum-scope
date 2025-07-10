@@ -1,8 +1,11 @@
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import pg from 'pg';
 import * as schema from '@shared/schema';
 
+const { Pool } = pg;
+
 let _db: ReturnType<typeof drizzle>;
+let _pool: pg.Pool;
 
 function getDb() {
   if (!_db) {
@@ -14,8 +17,11 @@ function getDb() {
       console.error('   - Supabase: https://supabase.com');
       throw new Error('DATABASE_URL environment variable is required');
     }
-    const sql = neon(process.env.DATABASE_URL);
-    _db = drizzle(sql, { schema });
+    _pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    });
+    _db = drizzle(_pool, { schema });
   }
   return _db;
 }

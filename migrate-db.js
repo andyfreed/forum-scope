@@ -1,5 +1,7 @@
 // Database migration script to add password_hash column
-import { neon } from '@neondatabase/serverless';
+import pg from 'pg';
+
+const { Client } = pg;
 
 async function migrate() {
   if (!process.env.DATABASE_URL) {
@@ -8,20 +10,25 @@ async function migrate() {
     process.exit(0); // Exit successfully to continue build
   }
 
-  const sql = neon(process.env.DATABASE_URL);
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  });
 
   try {
+    await client.connect();
+    console.log('Connected to database');
     console.log('Adding password_hash column to users table...');
     
     // Check if column already exists
-    const columnExists = await sql`
+    const columnExists = await client.query(`
       SELECT column_name 
       FROM information_schema.columns 
       WHERE table_name = 'users' AND column_name = 'password_hash'
-    `;
+    `);
 
-    if (columnExists.length === 0) {
-      await sql`ALTER TABLE users ADD COLUMN password_hash varchar`;
+    if (columnExists.rows.length === 0) {
+      await client.query('ALTER TABLE users ADD COLUMN password_hash varchar');
       console.log('✅ password_hash column added successfully');
     } else {
       console.log('✅ password_hash column already exists');
@@ -30,8 +37,8 @@ async function migrate() {
     // Try to make email required (not null) - skip if it fails
     try {
       // First update any null emails to prevent constraint violation
-      await sql`UPDATE users SET email = CONCAT('user_', id, '@example.com') WHERE email IS NULL`;
-      await sql`ALTER TABLE users ALTER COLUMN email SET NOT NULL`;
+      await client.query("UPDATE users SET email = CONCAT('user_', id, '@example.com') WHERE email IS NULL");
+      await client.query('ALTER TABLE users ALTER COLUMN email SET NOT NULL');
       console.log('✅ email column set to NOT NULL');
     } catch (e) {
       console.log('⚠️  Could not set email to NOT NULL (might already be set)');
@@ -51,6 +58,8 @@ async function migrate() {
     
     // Exit successfully to continue build
     process.exit(0);
+  } finally {
+    await client.end();
   }
 }
 
